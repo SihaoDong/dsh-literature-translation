@@ -11,20 +11,12 @@ let inputMode=false,inputModeResult='',inputModeInfo,readingBeforeInput;
 let active=null, renderId=0, task=null, selection='', requestId=0;
 const control=$('file');
 const status=msg=>{$('status').textContent=msg;};
-const compactReader=matchMedia('(max-width: 740px)');
 for(const [triggerId,panelId] of [
   ['file-menu-trigger','document-actions'],
   ['translation-menu-trigger','translation-actions'],
   ['more-reader-display','reader-display-actions']
 ]){
   const trigger=$(triggerId),panel=$(panelId);
-  function syncMenu(){
-    if(panel.matches(':popover-open'))panel.hidePopover();
-    panel.toggleAttribute('popover',compactReader.matches);
-    trigger.hidden=!compactReader.matches;
-  }
-  const responsive=panelId==='reader-display-actions';
-  if(responsive)compactReader.addEventListener('change',syncMenu);
   panel.addEventListener('beforetoggle',event=>{
     if(event.newState!=='open')return;
     const anchor=trigger.getBoundingClientRect();
@@ -34,7 +26,6 @@ for(const [triggerId,panelId] of [
   panel.addEventListener('click',event=>{
     if(event.target.closest('button')&&panel.matches(':popover-open'))panel.hidePopover();
   });
-  if(responsive)syncMenu();
 }
 const motionPreference=matchMedia('(prefers-reduced-motion: no-preference)');
 motionPreference.addEventListener('change',()=>{

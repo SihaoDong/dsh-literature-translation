@@ -1,3 +1,4 @@
+import {renderAnswerMarkdown} from './answer-markdown.mjs';
 import {chunks,joinSoftLines,joinTranslationParts} from './text-chunks.mjs';
 export {chunks} from './text-chunks.mjs';
 export function documentStorageKey(doc){
@@ -418,7 +419,8 @@ export function addDocumentTools({getActive, go, translateText, status, recogniz
   }
   function showAnswer(doc,answer){
     output.replaceChildren();
-    const paragraph=document.createElement('p');
+    const paragraph=document.createElement('div');
+    paragraph.className='qa-rich';
     const returnButton=document.createElement('button');
     returnButton.type='button';
     returnButton.hidden=true;
@@ -443,18 +445,7 @@ export function addDocumentTools({getActive, go, translateText, status, recogniz
       const view=$(position.continuous?'continuous':'scroll');
       view.scrollTo({top:position.top,left:position.left,behavior:'instant'});
     };
-    let offset=0;
-    for(const match of answer.text.matchAll(/\[PDF[ \t]*[:：][ \t]*(\d+)[ \t]*\]|第\s*(\d+)\s*页|\b(?:page[ \t]+|p\.[ \t]*)(\d+)\b(?!\.\d)/gi)){
-      const page=Number(match[1]??match[2]??match[3]);
-      if(!answer.pages.includes(page))continue;
-      paragraph.append(document.createTextNode(answer.text.slice(offset,match.index)));
-      const citation=document.createElement('button');
-      citation.type='button';citation.className='answer-citation';citation.textContent=match[0];
-      citation.onclick=()=>jumpToCitation(page);
-      paragraph.append(citation);
-      offset=match.index+match[0].length;
-    }
-    paragraph.append(document.createTextNode(answer.text.slice(offset)));
+    renderAnswerMarkdown(paragraph,answer.text,answer.pages,jumpToCitation);
     const label=document.createElement('p');label.className='excerpt-label';label.textContent='供模型参考的页面';
     if(answer.scope){
       const details=document.createElement('p');
@@ -583,7 +574,10 @@ export function addDocumentTools({getActive, go, translateText, status, recogniz
     }
     const reader=response.body.getReader(),decoder=new TextDecoder();
     let pending='',text='',finished=false,truncated=false,usage;
-    output.textContent='';
+    const preview=document.createElement('div');
+    preview.className='qa-rich';
+    output.replaceChildren(preview);
+    let lastRender=-Infinity;
     try{
       while(true){
         const {done,value}=await reader.read();
@@ -600,7 +594,11 @@ export function addDocumentTools({getActive, go, translateText, status, recogniz
           if(event.delta){
             if(!text)onFirstText();
             text+=event.delta;
-            output.append(document.createTextNode(event.delta));
+            const now=performance.now();
+            if(now-lastRender>=120){
+              renderAnswerMarkdown(preview,text);
+              lastRender=now;
+            }
           }
           if(event.truncated===true)truncated=true;
           if(event.usage)usage=event.usage;

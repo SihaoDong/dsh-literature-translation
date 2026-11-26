@@ -9,6 +9,11 @@ import {fileURLToPath} from 'node:url';
 import {resolve, sep} from 'node:path';
 const root = fileURLToPath(new URL('.', import.meta.url));
 const assets = new Map([['/','index.html'],['/app.mjs','app.mjs'],['/style.css','style.css'],['/document-tools.mjs','document-tools.mjs'],['/text-chunks.mjs','text-chunks.mjs'],['/pdf-notes.mjs','pdf-notes.mjs'],['/pdf-lib.js','node_modules/pdf-lib/dist/pdf-lib.min.js']]);
+assets.set('/answer-markdown.mjs','answer-markdown.mjs');
+assets.set('/markdown-it.js','node_modules/markdown-it/dist/browser/markdown-it.umd.min.js');
+assets.set('/texmath.js','node_modules/markdown-it-texmath/texmath.js');
+assets.set('/math/katex.min.js','node_modules/katex/dist/katex.min.js');
+assets.set('/math/katex.min.css','node_modules/katex/dist/katex.min.css');
 const configKeys=['DSH_GOOGLE_KEY','DSH_YOUDAO_APP_ID','DSH_YOUDAO_KEY','DSH_BAIDU_APP_ID','DSH_BAIDU_KEY','DSH_AI_URL','DSH_AI_MODEL','DSH_AI_KEY','DSH_AI_THINKING','DSH_DEEPL_KEY','DSH_TRANSLATE_URL','DSH_TRANSLATE_KEY'];
 let settingsQueue=Promise.resolve(),protectSecret,aiProfiles=[],settingsReadFailed=false;
 let translateLocally;
@@ -38,7 +43,7 @@ function writeSettings(file,change){
   settingsQueue=pending.catch(()=>{});
   return pending;
 }
-const mime = {html:'text/html',css:'text/css',mjs:'text/javascript',js:'text/javascript',wasm:'application/wasm',pfb:'application/octet-stream'};
+const mime = {html:'text/html',css:'text/css',mjs:'text/javascript',js:'text/javascript',wasm:'application/wasm',pfb:'application/octet-stream',woff2:'font/woff2',woff:'font/woff',ttf:'font/ttf'};
 const server = http.createServer(async (req,res) => {
   const controller=new AbortController(),{signal}=controller;
   res.once('close',()=>{if(!res.writableEnded)controller.abort();});
@@ -289,7 +294,8 @@ const server = http.createServer(async (req,res) => {
     if(/^\/ocr\/core\/tesseract-core[\w.-]*\.(js|wasm)$/.test(path))ocrAsset='node_modules/tesseract.js-core/'+path.slice(10);
     const language=/^\/ocr\/data\/(eng|chi_sim)\.traineddata\.gz$/.exec(path)?.[1];
     if(language)ocrAsset='node_modules/@tesseract.js-data/'+language+'/4.0.0_best_int/'+language+'.traineddata.gz';
-    const relative = assets.get(path) ?? ocrAsset ?? (/^\/pdf\/(build|web|cmaps|standard_fonts|wasm)\/[\w.-]+$/.test(path) ? 'node_modules/pdfjs-dist/' + path.slice(5) : '');
+    const mathFont=/^\/math\/fonts\/(KaTeX_[A-Za-z0-9_-]+\.(?:woff2?|ttf))$/.exec(path);
+    const relative = assets.get(path) ?? ocrAsset ?? (mathFont?'node_modules/katex/dist/fonts/'+mathFont[1]:null) ?? (/^\/pdf\/(build|web|cmaps|standard_fonts|wasm)\/[\w.-]+$/.test(path) ? 'node_modules/pdfjs-dist/' + path.slice(5) : '');
     if (!relative) {res.writeHead(404).end();return;}
     const file = resolve(root,relative);
     if (!file.startsWith(resolve(root)+sep)) {res.writeHead(404).end();return;}
@@ -310,3 +316,4 @@ export const ready = new Promise((resolve,reject)=>{
   });
 });
 await ready;
+
