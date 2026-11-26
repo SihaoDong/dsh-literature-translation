@@ -1,0 +1,24 @@
+{
+  "name": "dsh-literature-translation",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "desktop": "electron ."
+  },
+  "dependencies": {
+    "@tesseract.js-data/chi_sim": "1.0.0",
+    "@tesseract.js-data/eng": "1.0.0",
+    "pdf-lib": "1.17.1",
+    "pdfjs-dist": "5.4.149",
+    "tesseract.js": "7.0.0"
+  },
+  "devDependencies": {
+    "@electron/packager": "20.3.0",
+    "electron": "45.5.0"
+  },
+  "main": "desktop.cjs",
+  "productName": "Dsh文献翻译",
+  "author": "Dsh",
+  "version": "0.2.17"
+}

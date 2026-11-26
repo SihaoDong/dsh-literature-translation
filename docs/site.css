@@ -1,0 +1,20 @@
+:root{color-scheme:light;--text:#202328;--secondary:#535b66;--rule:#dfe2e7;--bg:#fbfbfc;--accent:#2456a1}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 Geist,"Segoe UI","Microsoft YaHei",sans-serif}
+a{color:var(--accent);text-underline-offset:.25em}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.wrap{width:min(1060px,calc(100% - 48px));margin-inline:auto}
+.masthead,.footer{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid var(--rule)}
+.masthead a,.footer a{min-height:44px;display:inline-flex;align-items:center}.brand{gap:10px;color:var(--text);font-weight:650;text-decoration:none}.brand img{border-radius:5px}
+.intro{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:24px;padding:52px 0 30px}
+h1{margin:0 0 10px;font-size:clamp(32px,4.5vw,54px);line-height:1.14;letter-spacing:-.04em}
+.intro p{max-width:38em;margin:0;color:var(--secondary)}
+.download{display:inline-flex;align-items:center;min-height:44px;padding:0 17px;background:var(--accent);color:#fff;border-radius:5px;text-decoration:none;font-weight:600}
+.download:hover{background:#19447f}
+figure{margin:0 0 42px}.screenshot{display:block;border:1px solid #cbd2dc;border-radius:7px;overflow:hidden;background:#fff}.screenshot img{width:100%;height:auto;display:block}
+figcaption{margin-top:8px;color:var(--secondary);font-size:14px}
+.reference{display:grid;grid-template-columns:205px minmax(0,1fr);gap:20px;padding:25px 0 32px;border-top:1px solid var(--rule)}
+.reference h2{margin:0;font-size:21px}.reference dl{margin:0}.reference dl>div{display:grid;grid-template-columns:126px minmax(0,1fr);gap:16px;padding:9px 0}.reference dt{font-weight:650}.reference dd{margin:0;color:var(--secondary)}.reference p{margin:3px 0 0}.reference a{min-height:44px;display:inline-flex;align-items:center}.reference kbd{font:14px Consolas,monospace}
+.footer{border-top:1px solid var(--rule);border-bottom:0;color:var(--secondary);font-size:14px}
+@media(max-width:767px){.wrap{width:calc(100% - 34px)}.intro,.reference,.reference dl>div{grid-template-columns:1fr}.intro{padding:30px 0 22px;gap:18px}.download{justify-self:start}.reference{gap:9px}.reference dl>div{gap:2px}.reference dl>div+div{border-top:1px solid var(--rule)}figure{margin-bottom:27px}}
+@media(prefers-reduced-motion:no-preference){.download{transition:transform .11s cubic-bezier(.2,.75,.25,1)}.download:active{transform:translateY(1px)}}
