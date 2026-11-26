@@ -2,6 +2,12 @@
 
 面向 Windows 的 PDF 论文阅读与翻译工具。划选 PDF 中的文字即可在侧栏查看译文，并可在连续阅读中滚动跨页、用 Ctrl + 滚轮缩放。
 
+## Windows 下载
+
+- [安装版（.exe）](https://github.com/SihaoDong/dsh-literature-translation/releases/download/v0.2.17/Dsh-0.2.17-Windows-x64-Setup.exe) · 双击运行安装程序。
+- [便携版（.zip）](https://github.com/SihaoDong/dsh-literature-translation/releases/download/v0.2.17/Dsh-0.2.17-Windows-x64-Portable.zip) · 完整解压后运行 Dsh文献翻译.exe。
+- [查看发布说明和全部附件](https://github.com/SihaoDong/dsh-literature-translation/releases/tag/v0.2.17#assets)
+
 ## 功能
 
 - 离线英译中与用户自配在线翻译服务
