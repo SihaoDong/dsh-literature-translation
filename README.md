@@ -4,9 +4,9 @@
 
 ## Windows 下载
 
-- [安装版（.exe）](https://github.com/SihaoDong/dsh-literature-translation/releases/download/v0.2.18/Dsh-0.2.18-Windows-x64-Setup.exe) · 双击运行安装程序。
-- [便携版（.zip）](https://github.com/SihaoDong/dsh-literature-translation/releases/download/v0.2.18/Dsh-0.2.18-Windows-x64-Portable.zip) · 完整解压后运行 Dsh文献翻译.exe。
-- [查看发布说明和全部附件](https://github.com/SihaoDong/dsh-literature-translation/releases/tag/v0.2.18#assets)
+- [安装版（.exe）](https://github.com/SihaoDong/dsh-literature-translation/releases/download/v0.2.19/Dsh-0.2.19-Windows-x64-Setup.exe) · 双击运行安装程序。
+- [便携版（.zip）](https://github.com/SihaoDong/dsh-literature-translation/releases/download/v0.2.19/Dsh-0.2.19-Windows-x64-Portable.zip) · 完整解压后运行 Dsh文献翻译.exe。
+- [查看发布说明和全部附件](https://github.com/SihaoDong/dsh-literature-translation/releases/tag/v0.2.19#assets)
 
 ## 功能
 
