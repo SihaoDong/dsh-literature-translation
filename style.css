@@ -489,3 +489,10 @@ main { height: auto; min-height: 0; }
   background:var(--dsh-active);border-color:transparent;color:var(--dsh-accent)
 }
 #reader-display-actions:popover-open select{width:100%;margin-bottom:4px}
+
+.desktop-menu-bar #tabs .document-tab{border-radius:5px}
+.desktop-menu-bar #tabs .document-tab.is-current{background:var(--dsh-active)}
+.desktop-menu-bar #tabs .document-tab.is-current button[aria-current=true]{background:transparent}
+.desktop-menu-bar #tabs .document-tab button:last-child{padding-inline:7px}
+.document-tab-menu button{display:block;width:100%;text-align:start}
+.document-tab-menu button:disabled{opacity:.5}

@@ -79,6 +79,54 @@ function notes(){
   }
 }
 function saveNotes(doc){try{localStorage.setItem(doc.key,JSON.stringify(doc.notes));}catch{status('批注保存失败。');}}
+function closeDocuments(closing){
+  const removed=new Set(closing);
+  const index=docs.indexOf(active);
+  for(let i=docs.length-1;i>=0;i--)if(removed.has(docs[i]))docs.splice(i,1);
+  if(removed.has(active))activate(docs[index]??docs[index-1]??null);
+  else{tabs();void refreshSelectionHistory();}
+  for(const doc of closing)void doc.pdf.destroy();
+}
+const tabMenu=document.createElement('div');
+tabMenu.className='source-context document-tab-menu';
+tabMenu.popover='auto';
+tabMenu.setAttribute('role','group');
+tabMenu.setAttribute('aria-label','文献操作');
+document.body.append(tabMenu);
+function openTabMenu(doc,event,trigger){
+  event.preventDefault();
+  tabMenu.hidePopover();
+  tabMenu.replaceChildren();
+  const commands=[
+    ['保存',()=>saveOriginalPdf(doc),!doc.fileId||!doc.notes.length||doc.saving],
+    ['另存为',async()=>{
+      try{
+        const bytes=doc.notes.length?await exportAnnotatedPdf(doc.bytes,doc.notes):doc.bytes;
+        downloadPagePdf(doc.name,bytes,'副本');
+        status('已另存 PDF 副本。');
+      }catch(error){status('无法另存 PDF：'+error.message);}
+    }],
+    ['打开文件位置',async()=>{
+      try{await window.dshDesktop.revealOpenPdf(doc.fileId);}
+      catch{status('无法打开文件位置。');}
+    },!doc.fileId||!window.dshDesktop?.revealOpenPdf],
+    ['关闭',()=>closeDocuments([doc]),doc.saving],
+    ['关闭所有文档',()=>closeDocuments(docs.slice()),docs.some(item=>item.saving)]
+  ];
+  for(const [label,action,disabled] of commands){
+    const button=document.createElement('button');
+    button.type='button';button.textContent=label;button.disabled=Boolean(disabled);
+    button.onclick=()=>{tabMenu.hidePopover();if(docs.includes(doc))void action();};
+    tabMenu.append(button);
+  }
+  tabMenu.showPopover();
+  const anchor=trigger.getBoundingClientRect();
+  const x=event.type==='keydown'?anchor.left:event.clientX;
+  const y=event.type==='keydown'?anchor.bottom:event.clientY;
+  tabMenu.style.left=Math.max(0,Math.min(x,innerWidth-tabMenu.offsetWidth))+'px';
+  tabMenu.style.top=Math.max(0,Math.min(y,innerHeight-tabMenu.offsetHeight))+'px';
+  tabMenu.querySelector('button:not(:disabled)')?.focus({preventScroll:true});
+}
 function tabs(){
   const strip=$('tabs'),scrollLeft=strip.scrollLeft,hadFocus=strip.contains(document.activeElement);
   let activeGroup;
@@ -88,7 +136,14 @@ function tabs(){
     const group=document.createElement('div');
     const select=document.createElement('button');select.textContent=select.title=doc.name;select.setAttribute('aria-current',String(doc===active));select.onclick=()=>activate(doc);
     const close=document.createElement('button');close.textContent='×';close.setAttribute('aria-label','关闭 '+doc.name);
-    close.onclick=()=>{const index=docs.indexOf(doc);docs.splice(index,1);if(active===doc)activate(docs[index]??docs[index-1]??null);else{tabs();void refreshSelectionHistory();}void doc.pdf.destroy();};
+    close.disabled=Boolean(doc.saving);
+    close.onclick=()=>closeDocuments([doc]);
+    group.className='document-tab';
+    group.classList.toggle('is-current',doc===active);
+    group.oncontextmenu=event=>openTabMenu(doc,event,select);
+    group.onkeydown=event=>{
+      if(event.key==='ContextMenu'||event.shiftKey&&event.key==='F10')openTabMenu(doc,event,select);
+    };
     group.append(select,close);strip.append(group);
     if(doc===active)activeGroup=group;
   }
@@ -1239,8 +1294,7 @@ async function exportRotatedPage(doc,page,angle){
   }catch(error){status('页面旋转失败：'+error.message);}
 }
 
-$('save-original-pdf').onclick=async()=>{
-  const doc=active;
+async function saveOriginalPdf(doc){
   if(!doc?.fileId||!doc.notes.length||doc.saving)return;
   doc.saving=true;
   notes();
@@ -1265,7 +1319,8 @@ $('save-original-pdf').onclick=async()=>{
     void previousPdf.destroy().catch(()=>{});
   }catch(error){if(active===doc)status(error.message);}
   finally{doc.saving=false;if(active===doc)notes();}
-};
+}
+$('save-original-pdf').onclick=()=>saveOriginalPdf(active);
 $('save-annotation-copy').onclick=()=>$('save-notes').click();
 document.addEventListener('keydown',event=>{
   if(event.defaultPrevented||event.isComposing||document.querySelector('dialog[open]'))return;

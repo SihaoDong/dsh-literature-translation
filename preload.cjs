@@ -6,6 +6,7 @@ contextBridge.exposeInMainWorld('dshDesktop',{
   setWindowMode(mode){return ipcRenderer.invoke('dsh-set-window-mode',mode);},
   reportBooks(hasBooks){ipcRenderer.send('dsh-book-state',hasBooks);},
   saveOpenPdf(id,bytes){return ipcRenderer.invoke('dsh-save-open-pdf',id,bytes);},
+  revealOpenPdf(id){return ipcRenderer.invoke('dsh-reveal-open-pdf',id);},
   pickPdfs(){return ipcRenderer.invoke('dsh-pick-pdfs');},
   routeDroppedPdf(file){
     const filePath=webUtils.getPathForFile(file);

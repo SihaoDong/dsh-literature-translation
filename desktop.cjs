@@ -1,7 +1,7 @@
 const {bundledModel}=require('./local-model.cjs');
 const {bundledTranslator}=require('./local-translation.cjs');
 const {printBilingual}=require('./bilingual-print.cjs');
-const {app, BrowserWindow, ipcMain, dialog, safeStorage} = require('electron');
+const {app, BrowserWindow, ipcMain, dialog, safeStorage, shell} = require('electron');
 const fs = require('node:fs');
 const path = require('node:path');
 const {createHash,randomUUID}=require('node:crypto');
@@ -133,6 +133,12 @@ else {
     function openSender(event){
       return event.senderFrame===event.sender.mainFrame&&new URL(event.senderFrame.url).origin===origin?BrowserWindow.fromWebContents(event.sender):null;
     }
+    ipcMain.handle('dsh-reveal-open-pdf',(event,id)=>{
+      const win=openSender(event);
+      const entry=win&&openedFiles.get(win)?.get(id);
+      if(!entry||!fs.existsSync(entry.file))throw Error('文件已移动或删除。');
+      shell.showItemInFolder(entry.file);
+    });
     ipcMain.handle('dsh-save-open-pdf',async(event,id,data)=>{
       const win=openSender(event);
       const entry=win&&openedFiles.get(win)?.get(id);
@@ -200,3 +206,7 @@ else {
   });
   app.on('window-all-closed', () => app.quit());
 }
+
+
+
+
